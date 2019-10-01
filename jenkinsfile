@@ -1,0 +1,36 @@
+pipeline {
+    
+    agent {
+        label 'docker'
+        
+    }
+    stages {
+        stage('clone'){
+            steps {
+                sh "rm -rf *"
+                sh "git clone https://github.com/Ahmed584/angular-spring-mysql-jenkins.git"
+            }
+        }
+        stage('build and deploy'){
+            steps {
+                sh'docker ps'
+                //sh ' docker container stop $(docker container ls -aq)'
+                sh'''
+                cd angular-spring-mysql-jenkins
+                docker-compose down --rmi all
+                docker ps
+                docker images
+                docker-compose up -d 
+                 docker ps '''
+            }
+        }
+        stage('push image'){
+            steps {
+          withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
+            sh 'docker tag angular-image:latest akrout123/angular-image:$BUILD_NUMBER'
+            sh 'docker push akrout123/angular-image:$BUILD_NUMBER'
+        }
+            }
+        }
+    }
+}
