@@ -6,6 +6,6 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - 4400:4200
+      - 4500:4200
     volumes:
       - /data/angular-app
